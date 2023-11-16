@@ -78,13 +78,16 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function showWrestlerDetails(detailsId, wrestler) {
-    const details = document.getElementById(detailsId)
-    details.querySelector('img').src = wrestler.image;
-    details.querySelector('img').alt = `${wrestler.name} Image`;
-    details.querySelector('p.name').innerText = `Name: ${wrestler.name}`;
-    details.querySelector('p.height').innerText = `Height: ${wrestler.stats.height}`;
-    details.querySelector('p.weight').innerText = `Weight: ${wrestler.stats.weight}`;
-    details.setAttribute('currentWrestlerId', wrestler.id)
+    const details = document.getElementById(detailsId);
+    const promise = getWrestlerInfo(wrestler.sumoKyoukaiId);
+    promise.then((kyoukaiInfo) => {
+      details.querySelector('img').src = 'https://www.sumo.or.jp' + kyoukaiInfo.src;
+      details.querySelector('img').alt = `${wrestler.name} Image`;
+      details.querySelector('p.name').innerText = `Name: ${wrestler.name}`;
+      details.querySelector('p.height').innerText = `Height: ${kyoukaiInfo.height}`;
+      details.querySelector('p.weight').innerText = `Weight: ${kyoukaiInfo.weight}`;
+      details.setAttribute('currentWrestlerId', wrestler.id)
+    })
   }
 
   function handleDragStart(ev) {
@@ -124,4 +127,20 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   renderWrestlers();
+
+  async function getWrestlerInfo(wrestlerId) {
+    try {
+      const response = await fetch(`http://localhost:8000/get-wrestler-info?id=${wrestlerId}`);
+      const result = await response.json();
+
+      if (result.success) {
+        return { 'height': result.height, 'weight': result.weight, 'src': result.imageSource }
+      } else {
+        console.error('Error:', result.error);
+      }
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+  }
+
 });

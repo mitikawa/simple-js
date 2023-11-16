@@ -1,176 +1,113 @@
 const sumoWrestlers = [
-    {
-      id: 1,
-      name: 'Terunofuji',
-      image: 'images/Terunofuji.jpg',
-      rank: 'Yokozuna',
-      side: 'E',
-      position: 1,
-      stats: {
-        height: '192 cm',
-        weight: '170 kg',
-      },
-    },
-    {
-      id: 2,
-      name: 'Takakeisho',
-      image: 'images/Takakeisho.jpg',
-      rank: 'Ozeki',
-      side: 'E',
-      position: 1,
-      stats: {
-        height: '175 cm',
-        weight: '165 kg',
-      },
-    },
-    {
-        id: 3,
-        name: 'Kirishima',
-        image: 'images/Kirishima.jpg',
-        rank: 'Ozeki',
-        side: 'W',
-        position: 1,
-        stats: {
-          height: '186 cm',
-          weight: '145 kg',
-        },
-      },
-      {
-        id: 4,
-        name: 'Hoshoryu',
-        image: 'images/Hoshoryu.jpg',
-        rank: 'Ozeki',
-        side: 'W',
-        position: 2,
-        stats: {
-          height: '187 cm',
-          weight: '140 kg',
-        },
-      },
-      {
-        id: 5,
-        name: 'Abi',
-        image: 'images/Abi.jpg',
-        rank: 'Komusubi',
-        side: 'E',
-        position: 1,
-        stats: {
-          height: '186 cm',
-          weight: '160 kg',
-        },
-      },
-      {
-        id: 6,
-        name: 'Hokutofuji',
-        image: 'images/Hokutofuji.jpg',
-        rank: 'Komusubi',
-        side: 'W',
-        position: 1,
-        stats: {
-          height: '184 cm',
-          weight: '161 kg',
-          wins: 45,
-          losses: 15,
-        },
-      },
-      {
-        id: 7,
-        name: 'Asanoyama',
-        image: 'images/Asanoyama.jpg',
-        rank: 'Maegashira',
-        side: 'E',
-        position: 1,
-        stats: {
-          height: '188 cm',
-          weight: '172 kg',
-          wins: 45,
-          losses: 15,
-        },
-      },
-      {
-        id: 8,
-        name: 'Ura',
-        image: 'images/Ura.jpg',
-        rank: 'Maegashira',
-        side: 'W',
-        position: 1,
-        stats: {
-          height: '175 cm',
-          weight: '140 kg',
-          wins: 45,
-          losses: 15,
-        },
-      },
-      {
-        id: 9,
-        name: 'Shodai',
-        image: 'images/Shodai.jpg',
-        rank: 'Maegashira',
-        side: 'E',
-        position: 2,
-        stats: {
-          height: '175 cm',
-          weight: '143 kg',
-          wins: 45,
-          losses: 15,
-        },
-      },
-      {
-        id: 10,
-        name: 'Daieisho',
-        image: 'images/Daieisho.jpg',
-        rank: 'Sekiwake',
-        side: 'E',
-        position: 1,
-        stats: {
-          height: '182 cm',
-          weight: '167 kg',
-        },
-      },
-      {
-        id: 11,
-        name: 'Wakamotoharu',
-        image: 'images/Wakamotoharu.jpg',
-        rank: 'Sekiwake',
-        side: 'W',
-        position: 1,
-        stats: {
-          height: '187 cm',
-          weight: '145 kg',
-          wins: 45,
-          losses: 15,
-        },
-      },
-      {
-        id: 12,
-        databaseId: 3661,
-        name: 'Kotonowaka',
-        image: 'images/Kotonowaka.jpg',
-        rank: 'Sekiwake',
-        side: 'E',
-        position: 2,
-        stats: {
-          height: '189 cm',
-          weight: '170 kg',
-        },
-      },
-      {
-        id: 12,
-        databaseId: 3661,
-        name: 'Meisei',
-        image: 'images/Meisei.jpg',
-        rank: 'Maegashira',
-        side: 'W',
-        position: 2,
-        stats: {
-          height: '180 cm',
-          weight: '155 kg',
-        },
-      },
-  ];
+  {
+    id: 1,
+    name: 'Terunofuji',
+    rank: 'Yokozuna',
+    side: 'E',
+    position: 1,
+    sumoKyoukaiId: 3321
+  },
+  {
+    id: 2,
+    name: 'Takakeisho',
+    rank: 'Ozeki',
+    side: 'E',
+    position: 1,
+    sumoKyoukaiId: 3582
+  },
+  {
+    id: 3,
+    name: 'Kirishima',
+    rank: 'Ozeki',
+    side: 'W',
+    position: 1,
+    sumoKyoukaiId: 3622
+  },
+  {
+    id: 4,
+    name: 'Hoshoryu',
+    image: 'images/Hoshoryu.jpg',
+    rank: 'Ozeki',
+    side: 'W',
+    position: 2,
+    sumoKyoukaiId: 3842,
+  },
+  {
+    id: 5,
+    name: 'Abi',
+    rank: 'Komusubi',
+    side: 'E',
+    position: 1,
+    sumoKyoukaiId: 3485
+  },
+  {
+    id: 6,
+    name: 'Hokutofuji',
+    rank: 'Komusubi',
+    side: 'W',
+    position: 1,
+    sumoKyoukaiId: 3630
+  },
+  {
+    id: 7,
+    name: 'Asanoyama',
+    rank: 'Maegashira',
+    side: 'E',
+    position: 1,
+    sumoKyoukaiId: 3682
+  },
+  {
+    id: 8,
+    name: 'Ura',
+    rank: 'Maegashira',
+    side: 'W',
+    position: 1,
+    sumoKyoukaiId: 3616
+  },
+  {
+    id: 9,
+    name: 'Shodai',
+    rank: 'Maegashira',
+    side: 'E',
+    position: 2,
+    sumoKyoukaiId: 3521
+  },
+  {
+    id: 10,
+    name: 'Daieisho',
+    rank: 'Sekiwake',
+    side: 'E',
+    position: 1,
+    sumoKyoukaiId: 3376
+  },
+  {
+    id: 11,
+    name: 'Wakamotoharu',
+    rank: 'Sekiwake',
+    side: 'W',
+    position: 1,
+    sumoKyoukaiId: 3371
+  },
+  {
+    id: 12,
+    name: 'Kotonowaka',
+    rank: 'Sekiwake',
+    side: 'E',
+    position: 2,
+    sumoKyoukaiId: 3661
+  },
+  {
+    id: 12,
+    name: 'Meisei',
+    rank: 'Maegashira',
+    side: 'W',
+    position: 2,
+    sumoKyoukaiId: 3337
+  },
+];
 
 
 
-  export default sumoWrestlers;
+export default sumoWrestlers;
 
-  export const sumoRanks = ['Yokozuna', 'Ozeki', 'Sekiwake', 'Komusubi', 'Maegashira'];
+export const sumoRanks = ['Yokozuna', 'Ozeki', 'Sekiwake', 'Komusubi', 'Maegashira'];
