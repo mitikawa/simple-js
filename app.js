@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const height = document.getElementById('height');
   const weight = document.getElementById('weight');
 
+  wrestlerDetails.addEventListener('drop', handleDrop);
+  wrestlerDetails.addEventListener('dragover', handleDragOver);
+
   function renderWrestlers() {
     renderSideRow(eastWrestlersList, 'East');
     renderSideRow(westWrestlersList, 'West');
@@ -58,14 +61,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function renderSideRow(wrestlersList, side) {
     const sideRow = document.createElement('tr');
-    sideRow.innerHTML = `<th class="sideRow" colspan="2">${side}</th>`; 
+    sideRow.innerHTML = `<th class="sideRow" colspan="2">${side}</th>`;
     wrestlersList.appendChild(sideRow);
   }
 
   function createWrestlerRow(wrestler) {
     const wrestlerRow = document.createElement('tr');
-    wrestlerRow.innerHTML = `<td class="wrestlerRow">${wrestler.position} - ${wrestler.name}</td>`;
-    wrestlerRow.addEventListener('click', () => showWrestlerDetails(wrestler));
+    wrestlerRow.innerHTML = `<td id="${wrestler.id}" class="wrestlerRow" draggable="true">${wrestler.position} - ${wrestler.name}</td>`;
+    wrestlerRow.addEventListener('dragstart', handleDragStart);
     return wrestlerRow;
   }
 
@@ -78,13 +81,31 @@ document.addEventListener('DOMContentLoaded', function () {
   function showWrestlerDetails(wrestler) {
     wrestlerImage.src = wrestler.image;
     wrestlerImage.alt = `${wrestler.name} Image`;
-
     name.innerText = `Name: ${wrestler.name}`;
     height.innerText = `Height: ${wrestler.stats.height}`;
     weight.innerText = `Weight: ${wrestler.stats.weight}`;
   }
 
-  
-  // Initial render
+  function handleDragStart(ev) {
+    const wrestlerId = ev.target.id;
+    ev.dataTransfer.setData('text', wrestlerId);
+  }
+
+  function handleDragOver(ev) {
+    ev.preventDefault();
+    return false;
+  }
+
+  function handleDrop(ev) {
+    ev.preventDefault();
+    const wrestlerId = ev.dataTransfer.getData('text');
+    const droppedWrestler = sumoWrestlers.find((wrestler) => wrestler.id.toString() === wrestlerId);
+
+    if (this.id === 'wrestlerDetails' && droppedWrestler) {
+      showWrestlerDetails(droppedWrestler);
+    }
+    return false;
+  }
+
   renderWrestlers();
 });
