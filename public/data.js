@@ -106,8 +106,6 @@ const sumoWrestlers = [
   },
 ];
 
+const sumoRanks = ['Yokozuna', 'Ozeki', 'Sekiwake', 'Komusubi', 'Maegashira'];
 
-
-export default sumoWrestlers;
-
-export const sumoRanks = ['Yokozuna', 'Ozeki', 'Sekiwake', 'Komusubi', 'Maegashira'];
+export { sumoWrestlers, sumoRanks }; 

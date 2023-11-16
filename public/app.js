@@ -1,4 +1,4 @@
-import sumoWrestlers, { sumoRanks } from './data.js';
+import { sumoWrestlers, sumoRanks } from './data.js';
 
 document.addEventListener('DOMContentLoaded', function () {
   const eastWrestlersList = document.getElementById('eastWrestlers');
