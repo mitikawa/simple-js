@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
     details.querySelector('p.name').innerText = `Name: ${wrestler.name}`;
     details.querySelector('p.height').innerText = `Height: ${wrestler.stats.height}`;
     details.querySelector('p.weight').innerText = `Weight: ${wrestler.stats.weight}`;
+    details.setAttribute('currentWrestlerId', wrestler.id)
   }
 
   function handleDragStart(ev) {
@@ -96,13 +97,28 @@ document.addEventListener('DOMContentLoaded', function () {
     return false;
   }
 
+  function getOtherDetailsDiv(detailsId) {
+    if (detailsId === 'leftDetails') {
+      return document.getElementById('rightDetails');
+    }
+    else if (detailsId === 'rightDetails') {
+      return document.getElementById('leftDetails');
+    } else return false;
+  }
+
   function handleDrop(ev) {
     ev.preventDefault();
     const wrestlerId = ev.dataTransfer.getData('text');
     const droppedWrestler = sumoWrestlers.find((wrestler) => wrestler.id.toString() === wrestlerId);
 
     if (this.className === 'wrestlerDetails' && droppedWrestler) {
-      showWrestlerDetails(this.id, droppedWrestler);
+      const other = getOtherDetailsDiv(this.id);
+      if (other.getAttribute('currentWrestlerId') === droppedWrestler.id.toString()) {
+        console.log("Same wrestler as other div.");
+        return false;
+      } else {
+        showWrestlerDetails(this.id, droppedWrestler);
+      }
     }
     return false;
   }
