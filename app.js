@@ -3,14 +3,13 @@ import sumoWrestlers, { sumoRanks } from './data.js';
 document.addEventListener('DOMContentLoaded', function () {
   const eastWrestlersList = document.getElementById('eastWrestlers');
   const westWrestlersList = document.getElementById('westWrestlers');
-  const wrestlerDetails = document.getElementById('wrestlerDetails');
-  const wrestlerImage = document.getElementById('wrestlerImage');
-  const name = document.getElementById('name');
-  const height = document.getElementById('height');
-  const weight = document.getElementById('weight');
+  const leftDetails = document.getElementById('leftDetails');
+  const rightDetails = document.getElementById('rightDetails');
 
-  wrestlerDetails.addEventListener('drop', handleDrop);
-  wrestlerDetails.addEventListener('dragover', handleDragOver);
+  leftDetails.addEventListener('drop', handleDrop);
+  leftDetails.addEventListener('dragover', handleDragOver);
+  rightDetails.addEventListener('drop', handleDrop);
+  rightDetails.addEventListener('dragover', handleDragOver);
 
   function renderWrestlers() {
     renderSideRow(eastWrestlersList, 'East');
@@ -78,12 +77,13 @@ document.addEventListener('DOMContentLoaded', function () {
     return emptyRow;
   }
 
-  function showWrestlerDetails(wrestler) {
-    wrestlerImage.src = wrestler.image;
-    wrestlerImage.alt = `${wrestler.name} Image`;
-    name.innerText = `Name: ${wrestler.name}`;
-    height.innerText = `Height: ${wrestler.stats.height}`;
-    weight.innerText = `Weight: ${wrestler.stats.weight}`;
+  function showWrestlerDetails(detailsId, wrestler) {
+    const details = document.getElementById(detailsId)
+    details.querySelector('img').src = wrestler.image;
+    details.querySelector('img').alt = `${wrestler.name} Image`;
+    details.querySelector('p.name').innerText = `Name: ${wrestler.name}`;
+    details.querySelector('p.height').innerText = `Height: ${wrestler.stats.height}`;
+    details.querySelector('p.weight').innerText = `Weight: ${wrestler.stats.weight}`;
   }
 
   function handleDragStart(ev) {
@@ -101,8 +101,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const wrestlerId = ev.dataTransfer.getData('text');
     const droppedWrestler = sumoWrestlers.find((wrestler) => wrestler.id.toString() === wrestlerId);
 
-    if (this.id === 'wrestlerDetails' && droppedWrestler) {
-      showWrestlerDetails(droppedWrestler);
+    if (this.className === 'wrestlerDetails' && droppedWrestler) {
+      showWrestlerDetails(this.id, droppedWrestler);
     }
     return false;
   }

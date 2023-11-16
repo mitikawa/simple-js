@@ -50,7 +50,7 @@ body {
 
 /* Wrestler Details Styles */
 
-#wrestlerDetails {
+.wrestlerDetails {
   width: 300px;
   height: 650px;
   padding: 20px;
@@ -61,7 +61,7 @@ body {
   justify-content: center;
 }
 
-#wrestlerImage {
+.wrestlerImage {
   max-width: 100%;
 }
 
