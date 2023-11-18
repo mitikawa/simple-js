@@ -1,9 +1,10 @@
-import { fileURLToPath } from 'url';
 import express from 'express';
-import path from 'path';
-import axios from 'axios';
-import redis from 'redis';
-import cheerio from 'cheerio';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+import {default as axios} from 'axios';
+import * as redis from 'redis';
+import * as cheerio from 'cheerio';
 import { sumoWrestlers } from './public/data.js';
 
 const app = express();
@@ -11,20 +12,20 @@ const port = 8000;
 
 const redisClient = redis.createClient();
 
-// Convert file URL to file path
 const __filename = fileURLToPath(import.meta.url);
-// Get the directory name
+
 const __dirname = path.dirname(__filename);
+
 
 // Serve static files (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Route for the main page
-app.get('/', (_, res) => {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const getWrestlerInfoFromSumoAssociation = async (wrestlerId) => {
+const getWrestlerInfoFromSumoAssociation = async (wrestlerId: string) => {
     const wrestlerProfileUrl = `https://www.sumo.or.jp/EnSumoDataRikishi/profile/${wrestlerId}/`;
     console.log(`Retrieving ${wrestlerId} info from sumo.or.jp.`)
     const response = await axios.get(wrestlerProfileUrl);
@@ -43,7 +44,7 @@ const getWrestlerInfoFromSumoAssociation = async (wrestlerId) => {
 
 app.get('/get-wrestler-info', async (req, res) => {
     try {
-        const wrestlerId = req.query.id;
+        const wrestlerId = req.query.id as string;
 
         const wrestlerInfoFromCache = await redisClient.get(wrestlerId);
         if (wrestlerInfoFromCache) {
@@ -55,7 +56,7 @@ app.get('/get-wrestler-info', async (req, res) => {
 
         await redisClient.set(wrestlerId, JSON.stringify(wrestlerInfo), { 'EX': 600 })
         res.json(wrestlerInfo);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error:', error.message);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
@@ -68,7 +69,7 @@ const startup = async () => {
 
         await Promise.all(
             sumoWrestlers.map(async (sumoWrestler) => {
-              const wrestlerId = sumoWrestler.sumoKyoukaiId;
+              const wrestlerId = sumoWrestler.sumoKyoukaiId.toString();
               const wrestlerInfo = await getWrestlerInfoFromSumoAssociation(wrestlerId);
               await redisClient.set(wrestlerId.toString(), JSON.stringify(wrestlerInfo), { 'EX': 600 });
             })
@@ -78,7 +79,9 @@ const startup = async () => {
             console.log(`Server is running at http://localhost:${port}`);
         });
     } catch (error) {
-        console.error('Error connecting to Redis:', error.message);
+        if (error instanceof Error) {
+            console.error('Error connecting to Redis:', error.message);
+        }
         process.exit(1); // Exit the process with a non-zero status code
     }
 }
