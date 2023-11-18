@@ -2,27 +2,31 @@ import express from 'express';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 
-import {default as axios} from 'axios';
+import { default as axios } from 'axios';
 import * as redis from 'redis';
 import * as cheerio from 'cheerio';
-import { sumoWrestlers } from './public/data.js';
+import { sumoWrestlers } from '../public/data.js';
 
 const app = express();
 const port = 8000;
 
-const redisClient = redis.createClient();
+
+const url = process.env.REDIS_URL || 'redis://sumo-redis:6379';
+const redisClient = redis.createClient({
+    url
+});
 
 const __filename = fileURLToPath(import.meta.url);
 
 const __dirname = path.dirname(__filename);
 
 
-// Serve static files (HTML, CSS, JS)
-app.use(express.static(path.join(__dirname, 'public')));
 
-// Route for the main page
+app.use(express.static(path.join(__dirname, '/../public')));
+
+
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, '/../public', 'index.html'));
 });
 
 const getWrestlerInfoFromSumoAssociation = async (wrestlerId: string) => {
@@ -69,11 +73,11 @@ const startup = async () => {
 
         await Promise.all(
             sumoWrestlers.map(async (sumoWrestler) => {
-              const wrestlerId = sumoWrestler.sumoKyoukaiId.toString();
-              const wrestlerInfo = await getWrestlerInfoFromSumoAssociation(wrestlerId);
-              await redisClient.set(wrestlerId.toString(), JSON.stringify(wrestlerInfo), { 'EX': 600 });
+                const wrestlerId = sumoWrestler.sumoKyoukaiId.toString();
+                const wrestlerInfo = await getWrestlerInfoFromSumoAssociation(wrestlerId);
+                await redisClient.set(wrestlerId.toString(), JSON.stringify(wrestlerInfo), { 'EX': 600 });
             })
-          );
+        );
 
         app.listen(port, () => {
             console.log(`Server is running at http://localhost:${port}`);
@@ -82,7 +86,7 @@ const startup = async () => {
         if (error instanceof Error) {
             console.error('Error connecting to Redis:', error.message);
         }
-        process.exit(1); // Exit the process with a non-zero status code
+        process.exit(1);
     }
 }
 
