@@ -13,6 +13,7 @@ services:
     volumes:
       - ./src:/usr/src/app/src
       - ./public:/usr/src/app/public
+      - ./dist:/usr/src/app/dist
       - /usr/src/app/node_modules  # Keep node_modules in the container
     depends_on:
       - redis
