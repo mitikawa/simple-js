@@ -8,22 +8,24 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 
+
 <body>
-  <div id="app">
-    <table id="eastWrestlers" class="sumoTable"></table>
-    <div id="leftDetails" class="wrestlerDetails">
-      <img id="leftImage" class="wrestlerImage" alt="Wrestler Image" src="default.jpg">
-      <p id="leftName" class="name"></p>
-      <p id="leftHeight" class="height"></p>
-      <p id="leftWeight" class="weight"></p>
-    </div>
-    <div id="rightDetails" class="wrestlerDetails">
-      <img id="rightImage" class="wrestlerImage" alt="Wrestler Image" src="default.jpg">
-      <p id="rightName" class="name"></p>
-      <p id="rightHeight" class="height"></p>
-      <p id="rightWeight" class="weight"></p>
-    </div>
-    <table id="westWrestlers" class="sumoTable"></table>
+  <header>
+  
+    <nav id="navbar">
+      <a href="/" data-page="home">Home</a>
+      <a href="/banzuke" data-page="banzuke">Banzuke</a>
+      <a href="/compare" data-page="compare">Compare</a>
+    </nav>
+  </header>
+  
+  <div class ="intro">
+    <h1>大相撲研究会</h1>
+  </div>
+  
+  <div class="about-me">
+    <h2> About this project </h2>
+    <p>This is a project to practice front end programming. I've recently started watching a lot of sumo so I've decided to create a website around this amazing theme.</p>
   </div>
 
   <script type="module" src="app.js"></script>
