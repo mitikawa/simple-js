@@ -37,6 +37,102 @@ app.get('/compare', (req, res) => {
     res.sendFile(path.join(__dirname, '/../public', 'compare.html'));
 });
 
+type BanzukeRowInfo = {
+    name: string;
+    rank: string;
+    side: string;
+    position: number;
+}
+
+const getCurrentBanzuke = async () => {
+    const banzukeUrl = 'https://sumodb.sumogames.de/Banzuke.aspx';
+    console.log(`Retrieving banzuke info from sumodb.sumogames.de.`)
+    const response = await axios.get(banzukeUrl);
+    const html = response.data;
+    
+    const $ = cheerio.load(html);
+
+    const makuuchiTable = $('table.banzuke:has(caption:contains("Makuuchi Banzuke"))');
+
+    const eastList: (BanzukeRowInfo | null)[] = [];
+    const westList: (BanzukeRowInfo | null)[] = [];
+
+    var previousRank: string | null = null;
+    var position: number = 1;
+
+    // Iterate through each row in the tbody
+    makuuchiTable.find('tbody tr').each((index, row) => {
+        const $row = $(row);
+
+        const rowLength: number = $row.find('td').length;
+
+        let westWrestlerName: string | null;
+        let eastWrestlerName: string | null;
+
+        // Only has west
+        if (rowLength == 4) {
+            if ($row.find('td').eq(0).hasClass('emptycell')) {
+                // Only has west wrestler [empty, rank, wrestler, record]
+                eastWrestlerName = null;
+                if ($row.find('td.shikona').length === 1){
+                    westWrestlerName = $row.find('td.shikona').text().trim();
+                } else {
+                    if ($row.find('td.debut').length === 1) {
+                        westWrestlerName = $row.find('td.debut').text().trim();
+                    } else {
+                        throw new Error("No shikona or debut found.");
+                    }
+                } 
+            } else {
+                // Only has east wrestler [wrestler, record, rank, empty]
+                if ($row.find('td.shikona').length === 1){
+                    eastWrestlerName = $row.find('td.shikona').text().trim();
+                } else {
+                    if ($row.find('td.debut').length === 1) {
+                        eastWrestlerName = $row.find('td.debut').text().trim();
+                    } else {
+                        throw new Error("No shikona or debut found.");
+                    }
+                } 
+                westWrestlerName = null;
+            }
+        } else {
+            // has both wrestlers [record,wrestler,rank,wrestler,record]
+            eastWrestlerName = $row.find('td').eq(1).text().trim();
+            westWrestlerName = $row.find('td').eq(3).text().trim();        
+        }
+
+        // Find the short_rank cell in the current row
+        const shortRankCell = $row.find('td.short_rank');
+        if (shortRankCell.length > 0) {
+            const rank = shortRankCell.text().trim();
+            if (rank === previousRank) {
+                position += 1;
+            } else {
+                position = 1;
+            }
+
+            if (eastWrestlerName) {
+                const eastRowInfo : BanzukeRowInfo = {"name": eastWrestlerName, "rank": rank, "position": position, "side": "E"};
+                eastList.push(eastRowInfo);
+            } else {
+                const eastRowInfo : BanzukeRowInfo = {"name": "", "rank": rank, "position": position, "side": "E"};
+                eastList.push(eastRowInfo);
+            }
+
+            if (westWrestlerName) {
+                const westRowInfo : BanzukeRowInfo = {"name": westWrestlerName, "rank": rank, "position": position, "side": "W"};
+                westList.push(westRowInfo);
+            } else {
+                const westRowInfo : BanzukeRowInfo = {"name": "", "rank": rank, "position": position, "side": "W"};
+                westList.push(westRowInfo);
+            }
+
+            previousRank = rank;
+        }
+    })
+    return {"eastList": eastList, "westList": westList};
+}
 
 const getWrestlerInfoFromSumoAssociation = async (wrestlerId: string) => {
     const wrestlerProfileUrl = `https://www.sumo.or.jp/EnSumoDataRikishi/profile/${wrestlerId}/`;
@@ -87,6 +183,12 @@ const startup = async () => {
                 await redisClient.set(wrestlerId.toString(), JSON.stringify(wrestlerInfo), { 'EX': 600 });
             })
         );
+
+        const banzuke = await getCurrentBanzuke();
+        console.log(banzuke.eastList);
+        console.log("***********");
+        console.log(banzuke.westList);
+
 
         app.listen(port, () => {
             console.log(`Server is running at http://localhost:${port}`);
