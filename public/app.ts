@@ -1,6 +1,13 @@
-import { sumoWrestlers, sumoRanks } from './data.js';
+import { sumoWrestlers, sumoRanks, IWrestler } from './data.js';
 
-document.addEventListener('DOMContentLoaded', function () {
+type IBanzukeRanking = {
+  name: string;
+  rank: string;
+  side: string;
+  position: number;
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
   const eastWrestlersList = document.getElementById('eastWrestlers') as HTMLTableElement;
   const westWrestlersList = document.getElementById('westWrestlers') as HTMLTableElement;
   const leftDetails = document.getElementById('leftDetails') as HTMLDivElement;
@@ -11,7 +18,62 @@ document.addEventListener('DOMContentLoaded', function () {
   rightDetails.addEventListener('drop', handleDrop);
   rightDetails.addEventListener('dragover', handleDragOver);
 
-  function renderWrestlers() {
+  var eastList: IWrestler[] = [];
+  var westList: IWrestler[] = [];
+
+  const banzuke = await getBanzukeInfo();
+
+  if (banzuke) {
+    var banzukeEastList = banzuke.eastList;
+    var banzukeWestList = banzuke.westList;
+  } else {
+    throw new Error('Error fetching banzuke info.')
+  }
+
+  eastList = createWrestlerListFromBanzukeList(banzukeEastList);
+  westList = createWrestlerListFromBanzukeList(banzukeWestList);
+
+
+
+  function createWrestlerListFromBanzukeList(list: IBanzukeRanking[]) {
+    const wrestlerList: IWrestler[] = [];
+    for (const row of list) {
+      var rank: string = '';
+      var position: number = 0;
+
+      if (row.rank == 'Y') {
+        rank = 'Yokozuna';
+        position = row.position;
+      } else if (row.rank == 'O') {
+        rank = 'Ozeki';
+        position = row.position;
+      } else if (row.rank == 'S') {
+        rank = 'Sekiwake';
+        position = row.position;
+      } else if (row.rank == 'K') {
+        rank = 'Komusubi';
+        position = row.position;
+      } else {
+        rank = 'Maegashira';
+        position = Number(row.rank.slice(1,))
+      }
+
+      // Search for the wrestler in the database
+      const filterResult = sumoWrestlers.filter((wrestler) => wrestler.name === row.name);
+      const dbWrestler = filterResult.at(0);
+
+      if (dbWrestler) {
+        dbWrestler.rank = rank;
+        dbWrestler.position = position;
+        dbWrestler.side = row.side;
+        wrestlerList.push(dbWrestler);
+      }
+    }
+    return wrestlerList;
+  }
+
+
+  function renderWrestlers(eastList: IWrestler[], westList: IWrestler[]) {
     renderSideRow(eastWrestlersList, 'East');
     renderSideRow(westWrestlersList, 'West');
 
@@ -24,10 +86,10 @@ document.addEventListener('DOMContentLoaded', function () {
       eastWrestlersList.appendChild(eastRankRow);
       westWrestlersList.appendChild(westRankRow);
 
-      const eastWrestlers = sumoWrestlers.filter(
+      const eastWrestlers = eastList.filter(
         (wrestler) => wrestler.side === 'E' && wrestler.rank === rank
       );
-      const westWrestlers = sumoWrestlers.filter(
+      const westWrestlers = westList.filter(
         (wrestler) => wrestler.side === 'W' && wrestler.rank === rank
       );
 
@@ -64,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
     wrestlersList.appendChild(sideRow);
   }
 
-  function createWrestlerRow(wrestler: any) {
+  function createWrestlerRow(wrestler: IWrestler) {
     const wrestlerRow = document.createElement('tr');
     wrestlerRow.innerHTML = `<td id="${wrestler.id}" class="wrestlerRow" draggable="true">${wrestler.position} - ${wrestler.name}</td>`;
     wrestlerRow.addEventListener('dragstart', handleDragStart);
@@ -120,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else return false;
   }
 
-  function handleDrop(this: HTMLElement, ev: DragEvent) : boolean {
+  function handleDrop(this: HTMLElement, ev: DragEvent): boolean {
     ev.preventDefault();
     if (!ev.dataTransfer) return false;
     const wrestlerId: string = ev.dataTransfer.getData('text');
@@ -138,14 +200,13 @@ document.addEventListener('DOMContentLoaded', function () {
     return false;
   }
 
-  renderWrestlers();
 
   async function getWrestlerInfo(wrestlerId: string) {
     try {
       const response = await fetch(`http://localhost:8000/get-wrestler-info?id=${wrestlerId}`);
       const result = await response.json();
 
-      if (result.success) {
+      if (result) {
         return { 'height': result.height, 'weight': result.weight, 'src': result.imageSource }
       } else {
         console.error('Error:', result.error);
@@ -154,4 +215,21 @@ document.addEventListener('DOMContentLoaded', function () {
       console.error('Error:', error.message);
     }
   }
+
+  async function getBanzukeInfo(): Promise<{ eastList: IBanzukeRanking[]; westList: IBanzukeRanking[]; } | undefined> {
+    try {
+      const response = await fetch(`http://localhost:8000/get-banzuke-info`);
+      const result = await response.json();
+
+      if (result) {
+        return { 'eastList': (result.eastList as IBanzukeRanking[]), 'westList': (result.westList as IBanzukeRanking[]) }
+      } else {
+        console.error('Error:', result.error);
+      }
+    } catch (error: any) {
+      console.error('Error:', error.message);
+    }
+  }
+
+  renderWrestlers(eastList, westList);
 });
