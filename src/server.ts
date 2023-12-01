@@ -44,18 +44,18 @@ type BanzukeRowInfo = {
     position: number;
 }
 
-const getCurrentBanzuke = async () => {
+const getCurrentBanzuke = async (): Promise<{ 'eastList': BanzukeRowInfo[]; 'westList': BanzukeRowInfo[]; }> => {
     const banzukeUrl = 'https://sumodb.sumogames.de/Banzuke.aspx';
     console.log(`Retrieving banzuke info from sumodb.sumogames.de.`)
     const response = await axios.get(banzukeUrl);
     const html = response.data;
-    
+
     const $ = cheerio.load(html);
 
     const makuuchiTable = $('table.banzuke:has(caption:contains("Makuuchi Banzuke"))');
 
-    const eastList: (BanzukeRowInfo | null)[] = [];
-    const westList: (BanzukeRowInfo | null)[] = [];
+    const eastList: BanzukeRowInfo[] = [];
+    const westList: BanzukeRowInfo[] = [];
 
     var previousRank: string | null = null;
     var position: number = 1;
@@ -74,7 +74,7 @@ const getCurrentBanzuke = async () => {
             if ($row.find('td').eq(0).hasClass('emptycell')) {
                 // Only has west wrestler [empty, rank, wrestler, record]
                 eastWrestlerName = null;
-                if ($row.find('td.shikona').length === 1){
+                if ($row.find('td.shikona').length === 1) {
                     westWrestlerName = $row.find('td.shikona').text().trim();
                 } else {
                     if ($row.find('td.debut').length === 1) {
@@ -82,10 +82,10 @@ const getCurrentBanzuke = async () => {
                     } else {
                         throw new Error("No shikona or debut found.");
                     }
-                } 
+                }
             } else {
                 // Only has east wrestler [wrestler, record, rank, empty]
-                if ($row.find('td.shikona').length === 1){
+                if ($row.find('td.shikona').length === 1) {
                     eastWrestlerName = $row.find('td.shikona').text().trim();
                 } else {
                     if ($row.find('td.debut').length === 1) {
@@ -93,13 +93,13 @@ const getCurrentBanzuke = async () => {
                     } else {
                         throw new Error("No shikona or debut found.");
                     }
-                } 
+                }
                 westWrestlerName = null;
             }
         } else {
             // has both wrestlers [record,wrestler,rank,wrestler,record]
             eastWrestlerName = $row.find('td').eq(1).text().trim();
-            westWrestlerName = $row.find('td').eq(3).text().trim();        
+            westWrestlerName = $row.find('td').eq(3).text().trim();
         }
 
         // Find the short_rank cell in the current row
@@ -113,25 +113,25 @@ const getCurrentBanzuke = async () => {
             }
 
             if (eastWrestlerName) {
-                const eastRowInfo : BanzukeRowInfo = {"name": eastWrestlerName, "rank": rank, "position": position, "side": "E"};
+                const eastRowInfo: BanzukeRowInfo = { "name": eastWrestlerName, "rank": rank, "position": position, "side": "E" };
                 eastList.push(eastRowInfo);
             } else {
-                const eastRowInfo : BanzukeRowInfo = {"name": "", "rank": rank, "position": position, "side": "E"};
+                const eastRowInfo: BanzukeRowInfo = { "name": "", "rank": rank, "position": position, "side": "E" };
                 eastList.push(eastRowInfo);
             }
 
             if (westWrestlerName) {
-                const westRowInfo : BanzukeRowInfo = {"name": westWrestlerName, "rank": rank, "position": position, "side": "W"};
+                const westRowInfo: BanzukeRowInfo = { "name": westWrestlerName, "rank": rank, "position": position, "side": "W" };
                 westList.push(westRowInfo);
             } else {
-                const westRowInfo : BanzukeRowInfo = {"name": "", "rank": rank, "position": position, "side": "W"};
+                const westRowInfo: BanzukeRowInfo = { "name": "", "rank": rank, "position": position, "side": "W" };
                 westList.push(westRowInfo);
             }
 
             previousRank = rank;
         }
     })
-    return {"eastList": eastList, "westList": westList};
+    return { "eastList": eastList, "westList": westList };
 }
 
 const getWrestlerInfoFromSumoAssociation = async (wrestlerId: string) => {
