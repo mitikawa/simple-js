@@ -171,6 +171,23 @@ app.get('/get-wrestler-info', async (req, res) => {
     }
 });
 
+app.get('/get-banzuke-info', async (_, res) => {
+    try {
+        const banzukeFromCache = await redisClient.get('banzuke');
+        if (banzukeFromCache) {
+            console.log('Retrieving banzuke info from redis client.');
+            return res.json(JSON.parse(banzukeFromCache));
+        }
+
+        const banzuke = await getCurrentBanzuke();
+
+        await redisClient.set('banzuke', JSON.stringify(banzuke), { 'EX': 600 })
+        res.json(banzuke);
+    } catch (error: any) {
+        console.error('Error:', error.message);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+})
 
 const startup = async () => {
     try {
@@ -185,10 +202,7 @@ const startup = async () => {
         );
 
         const banzuke = await getCurrentBanzuke();
-        console.log(banzuke.eastList);
-        console.log("***********");
-        console.log(banzuke.westList);
-
+        await redisClient.set('banzuke', JSON.stringify(banzuke), { 'EX': 600 });
 
         app.listen(port, () => {
             console.log(`Server is running at http://localhost:${port}`);
