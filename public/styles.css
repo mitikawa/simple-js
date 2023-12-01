@@ -6,32 +6,7 @@ body {
   padding: 0;
 }
 
-#banzuke {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px;
-}
-
-.explanation {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
 /* Navbar Styles */
-
-/* header {
-  background-color: white;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 0 25px 0 black;
-} */
 
 #navbar {
   background-color: #333;
@@ -52,7 +27,7 @@ body {
   color: black;
 }
 
-/* CSS for main section of home page */
+/* Home Page */
 .intro {
   display: flex;
   flex-direction: column;
@@ -95,7 +70,65 @@ body {
   margin: 10px 0;
 }
 
-/* Table Styles */
+/* Banzuke */
+
+
+#banzuke {
+  text-align: center;
+  padding: 20px;
+}
+
+.banzukeTable {
+  display: inline-block;
+  margin: auto;
+  border-collapse: collapse;
+  width: 150px;
+}
+
+.banzukeTable th,
+.banzukeTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  cursor: pointer;
+  height: 20px;
+}
+
+.banzukeTable tr:hover {
+  background-color: #f5f5f5;
+}
+
+.banzukeRankRow {
+  background-color: #f2f2f2;
+  pointer-events: none;
+}
+
+.banzukeSideRow {
+  background-color: #ddd;
+  font-weight: bold;
+}
+
+.banzukeEmpty {
+  pointer-events: none;
+}
+
+.banzukeWrestlerRow {
+  cursor: pointer;
+}
+
+/* Compare */
+
+#compareMainSection {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.explanation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .sumoTable {
   margin: auto;
@@ -108,7 +141,6 @@ body {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
-  cursor: pointer;
   height: 20px;
 }
 
@@ -130,6 +162,9 @@ body {
   pointer-events: none;
 }
 
+.wrestlerRow {
+  cursor: move;
+}
 
 /* Wrestler Details Styles */
 
