@@ -1,4 +1,15 @@
-const sumoWrestlers = [
+interface IWrestler {
+  id: number;
+  name: string;
+  sumoKyoukaiId: string;
+  birth: string;
+  heya: string;
+  side?: string;
+  rank?: string;
+  position?: number;
+}
+
+const sumoWrestlers: IWrestler[] = [
   { id: 1, name: "Terunofuji", sumoKyoukaiId: "3321", birth: "Mongolia", heya: "Isegahama" },
   { id: 2, name: "Takakeisho", sumoKyoukaiId: "3582", birth: "Hyogo", heya: "Tokiwayama" },
   { id: 3, name: "Kirishima", sumoKyoukaiId: "3622", birth: "Mongolia", heya: "Michinoku" },
@@ -73,4 +84,4 @@ const sumoWrestlers = [
 
 const sumoRanks = ['Yokozuna', 'Ozeki', 'Sekiwake', 'Komusubi', 'Maegashira'];
 
-export { sumoWrestlers, sumoRanks }; 
+export { sumoWrestlers, sumoRanks, IWrestler }; 
